@@ -32,13 +32,17 @@ const useProvideProfile = (): UseProfileState => {
     if (error && error.code !== 'PGRST116') {
       setError(error.message)
     } else if (data) {
-      setProfile(data as Profile)
+      setProfile({
+        ...(data as Profile),
+        role: (data as Profile).role ?? 'student',
+      })
     } else {
       setProfile({
         user_id: userId,
         first_name: null,
         last_name: null,
         avatar_url: null,
+        role: 'student',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
@@ -62,7 +66,10 @@ const useProvideProfile = (): UseProfileState => {
 
       const payload = {
         user_id: userId,
-        ...input,
+        first_name: input.first_name ?? profile?.first_name ?? null,
+        last_name: input.last_name ?? profile?.last_name ?? null,
+        avatar_url: input.avatar_url ?? profile?.avatar_url ?? null,
+        role: input.role ?? profile?.role ?? 'student',
       }
 
       const { data, error } = await supabase
@@ -78,13 +85,22 @@ const useProvideProfile = (): UseProfileState => {
       }
 
       if (data) {
-        setProfile(data as Profile)
+        setProfile({
+          ...(data as Profile),
+          role: (data as Profile).role ?? 'student',
+        })
       }
 
       setSaving(false)
       return { data: (data as Profile) ?? null, error: null }
     },
-    [userId]
+    [
+      userId,
+      profile?.first_name,
+      profile?.last_name,
+      profile?.avatar_url,
+      profile?.role,
+    ]
   )
 
   return useMemo(

@@ -18,7 +18,7 @@ const formatDate = (iso?: string | null) => {
       month: 'short',
       day: 'numeric',
     }).format(new Date(iso))
-  } catch (error) {
+  } catch {
     return iso
   }
 }
